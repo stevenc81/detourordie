@@ -1,0 +1,12 @@
+{
+  "name": "dod_webapp",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "express": "*",
+    "grunt": "*",
+    "grunt-contrib-jade": "*",
+    "grunt-contrib-less": "*",
+    "grunt-contrib-watch": "*"
+  }
+}
