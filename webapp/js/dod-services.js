@@ -26,21 +26,45 @@ app.factory('geolocation', ['$window', function ($window) {
     };
 }]);
 
-app.factory('serviceAPI', ['$http', '$rootScope', '$location', 'geolocation', 'socketIO', 'chatStorage', 'dialogBox', '$navigate', function ($http, $rootScope, $location, geolocation, socketIO, chatStorage, dialogBox, $navigate) {
-    var ServiceAPIs = {
-            'p': 'http://api.2or3.com',
-            'd': 'http://dev.api.2or3.com'},
-        apiMode = localStorage.apiMode ? localStorage.apiMode : 'p',
-        apiPrefix = ServiceAPIs[apiMode];
-        console.log('[serviceAPI][mode] ' + apiMode);
+app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
+    var apiUrl = 'http://localhost:3000';
 
-    var _appendAuth = function (urlStr) {
-        urlStr += '&uid=' + localStorage.uid;
-        urlStr += '&token=' + localStorage.token;
+    var apis = {
+        createCheckpoints: function(params) {
+            var geo = geolocation.getGeo();
+            var urlStr = apiUrl + '/checkpoints';
 
-        if (urlStr.indexOf('?') === -1) {
-            urlStr = urlStr.replace('&uid', '?uid');
+            $http({method: 'POST', url: urlStr, data: {
+                lat: geo.lat,
+                lon: geo.lon
+            }}).
+            success(function (data, status, headers, config) {
+                console.log(data);
+
+                if (params && params.success) {
+                    params.success(data);
+                }
+            }).
+            error(function (data, status, headers, config) {
+                console.log("# got some error");
+            });
+        },
+        checkpoints: function(params) {
+            var urlStr = apiUrl + '/checkpoints';
+
+            $http({method: 'GET', url: urlStr}).
+            success(function (data, status, headers, config) {
+                console.log(data);
+
+                if (params && params.success) {
+                    params.success(data);
+                }
+            }).
+            error(function (data, status, headers, config) {
+                console.log("# got some error");
+            });
         }
-
-        return urlStr;
     };
+
+    return apis;
+}]);

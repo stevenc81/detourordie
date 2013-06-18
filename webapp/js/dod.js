@@ -5,8 +5,14 @@ var app = angular.module('dod', ['google-maps', 'dod-services']).
             otherwise({redirectTo: '/'});
     });
 
-function MainCtrl($scope, geolocation, $log) {
+function MainCtrl($scope, geolocation, $log, serviceAPI) {
     console.log('# in main control');
+
+    serviceAPI.checkpoints({
+        success: function(data) {
+            $scope.checkpoints = data.items;
+        }
+    });
 
     var geo = geolocation.getGeo();
     google.maps.visualRefresh = true;
@@ -30,10 +36,7 @@ function MainCtrl($scope, geolocation, $log) {
         zoomProperty: 13,
 
         /** list of markers to put in the map */
-        markersProperty: [ {
-                latitude: geo.lat,
-                longitude: geo.lon
-            }],
+        markersProperty: [$scope.checkpoints],
 
         // These 2 properties will be set when clicking on the map
         clickedLatitudeProperty: null,
@@ -51,5 +54,10 @@ function MainCtrl($scope, geolocation, $log) {
     $scope.reportLoc = function() {
         console.log('# report loc');
 
+        serviceAPI.createCheckpoints({
+            success: function(data) {
+                console.log(data);
+            }
+        });
     };
 }
