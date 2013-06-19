@@ -30,7 +30,7 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
     var apiUrl = 'http://dod-api.jit.su';
 
     var apis = {
-        createCheckpoints: function(params) {
+        createCheckpoint: function(params) {
             var geo = geolocation.getGeo();
             var urlStr = apiUrl + '/checkpoints';
 
@@ -49,7 +49,7 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
                 console.log("# got some error");
             });
         },
-        checkpoints: function(params) {
+        listCheckpoints: function(params) {
             var urlStr = apiUrl + '/checkpoints';
 
             $http({method: 'GET', url: urlStr}).

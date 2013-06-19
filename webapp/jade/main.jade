@@ -1,9 +1,8 @@
-extends layout
+header.bar-title
+    a.button(ng-click="refreshMap()") Refresh
+    h1.title Checkpoints
+    a.button News
 
-block content
-    #app(ng-controller="MainCtrl")
-        header.bar-title
-            h1.title Checkpoints
-        .content
-            .google-map(center="position.coords", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="true", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")
-            a.button-main.button-block(ng-click="reportLoc()") Report Checkpoint
+.content
+    .google-map(center="position.coords", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="false", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")
+    a.button-main.button-block(ng-click="reportLoc()") Report Checkpoint
