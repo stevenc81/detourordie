@@ -3,7 +3,7 @@ var flow = require('flow');
 exports.list = function(req, res, next) {
     flow.exec(
         function() {
-            var collection = mongo.collection('checkpoints');
+            var collection = db.collection('checkpoints');
             collection.find().toArray(this);
         },
         function(err, result) {
@@ -22,7 +22,7 @@ exports.list = function(req, res, next) {
             };
 
             if (pageToken * maxResults <  result.length) {
-                resp.nextPageToken =  pageToken++;
+                resp.nextPageToken = pageToken++;
             }
 
             res.json(200, resp);
@@ -35,7 +35,7 @@ exports.create = function(req, res, next) {
         function() {
             var lat = req.body.lat;
             var lon = req.body.lon;
-            var collection = mongo.collection('checkpoints');
+            var collection = db.collection('checkpoints');
             collection.insert({'lat': lat, 'lon': lon}, this);
         },
         function(err, result) {
@@ -43,7 +43,7 @@ exports.create = function(req, res, next) {
                 res.json(500, err);
             }
 
-            res.json(200, {'checkopint': result[0]});
+            res.json(200, {'checkpoint': result[0]});
         }
     );
 };

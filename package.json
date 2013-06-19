@@ -1,9 +1,10 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "dod-api",
+  "subdomain": "dod-api",
+  "version": "0.0.1-8",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node app.js"
   },
   "dependencies": {
     "express": "3.1.0",
@@ -11,5 +12,8 @@
     "less-middleware": "*",
     "flow": "*",
     "mongodb": "*"
+  },
+  "engines": {
+    "node": "0.8.x"
   }
 }

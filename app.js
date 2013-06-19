@@ -1,9 +1,15 @@
+global.conf = require('./config');
+
+if (process.argv[2] && process.argv[2] === '-d') {
+    process.env['MONGODB_URL'] = 'mongodb://' + conf.mongo.host + ':' +
+    conf.mongo.port + '/' + conf.mongo.dbname;
+
+}
 
 /**
  * Module dependencies.
  */
-global.conf = require('./config');
-global.mongo = require('./mongoconnect');
+global.db = require('./mongoconnect');
 
 var express = require('express')
   // , routes = require('./routes')

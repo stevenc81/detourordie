@@ -1,12 +1,19 @@
 {
-  "name": "dod_webapp",
+  "name": "dod-webapp",
+  "subdomain": "dod-webapp",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
   "devDependencies": {
     "express": "*",
     "grunt": "*",
     "grunt-contrib-jade": "*",
     "grunt-contrib-less": "*",
     "grunt-contrib-watch": "*"
+  },
+  "engines": {
+    "node": "0.8.x"
   }
 }

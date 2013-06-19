@@ -27,7 +27,7 @@ app.factory('geolocation', ['$window', function ($window) {
 }]);
 
 app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
-    var apiUrl = 'http://localhost:3000';
+    var apiUrl = 'http://dod-api.jit.su';
 
     var apis = {
         createCheckpoints: function(params) {

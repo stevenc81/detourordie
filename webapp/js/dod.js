@@ -62,7 +62,11 @@ function MainCtrl($scope, geolocation, $log, serviceAPI) {
 
         serviceAPI.createCheckpoints({
             success: function(data) {
-                console.log(data);
+                checkpoints.push({
+                    latitude: data.checkpoint.lat,
+                    longitude: data.checkpoint.lon
+                });
+                $scope.refreshProperty = true;
             }
         });
     };
