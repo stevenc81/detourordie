@@ -11,7 +11,7 @@ exports.list = function(req, res, next) {
                 res.json(500, err);
             }
 
-            var maxResults = req.query.maxResults? req.query.maxResults : 2;
+            var maxResults = req.query.maxResults? req.query.maxResults : 10;
             var pageToken = req.query.pageToken? req.query.pageToken : 1;
 
             resp = {

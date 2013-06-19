@@ -8,9 +8,15 @@ var app = angular.module('dod', ['google-maps', 'dod-services']).
 function MainCtrl($scope, geolocation, $log, serviceAPI) {
     console.log('# in main control');
 
+    var checkpoints = [];
     serviceAPI.checkpoints({
         success: function(data) {
-            $scope.checkpoints = data.items;
+            for (var i = 0; i < data.items.length; i++) {
+                checkpoints.push({
+                    latitude: data.items[i].lat,
+                    longitude: data.items[i].lon
+                });
+            }
         }
     });
 
@@ -36,7 +42,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI) {
         zoomProperty: 13,
 
         /** list of markers to put in the map */
-        markersProperty: [$scope.checkpoints],
+        markersProperty: checkpoints,
 
         // These 2 properties will be set when clicking on the map
         clickedLatitudeProperty: null,
