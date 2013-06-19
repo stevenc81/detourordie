@@ -17,6 +17,8 @@ function MainCtrl($scope, geolocation, $log, serviceAPI) {
                     longitude: data.items[i].lon
                 });
             }
+
+            $scope.refreshProperty = true;
         }
     });
 

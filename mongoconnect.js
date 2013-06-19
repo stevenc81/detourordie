@@ -9,13 +9,13 @@ var db = new Db(connectionUri.pathname.substr(1), server, conf.mongo.opts);
 
 db.open(function(err, db) {
     if(err) throw err;
-    console.log("Connected to Database");
+    console.log("# Connected to Database");
 
     if (connectionUri.auth) {
         creds = connectionUri.auth.split(':');
         db.authenticate(creds[0], creds[1], function(err, result) {
             if (err) throw err;
-            console.log("Authenticated");
+            console.log("# MongoDB connection Authenticated");
         });
     }
 });
