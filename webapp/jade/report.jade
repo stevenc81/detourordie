@@ -1,6 +1,7 @@
 header.bar-title
     a.button-prev(ng-click="back2Map()") Map
     h1.title Report Location
+    a.button(ng-click="confirmReport()") Confirm
 
 .content
     .google-map(center="position.coords", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="true", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")

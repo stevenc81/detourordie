@@ -51,26 +51,24 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate) {
         clickedLongitudeProperty: null,
 
         eventsProperty: {
-          click: function (mapModel, eventName, originalEventArgs) {
-            // 'this' is the directive's scope
-            $log.log("user defined event on map directive with scope", this);
-            $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-          }
+          // click: function (mapModel, eventName, originalEventArgs) {
+          //   // 'this' is the directive's scope
+          //   $log.log("user defined event on map directive with scope", this);
+          //   $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
+          // }
         }
     });
 
-    $scope.reportLoc = function($scope, geolocation) {
-        console.log('# report loc');
-        $navigate.go('/report');
-        // serviceAPI.createCheckpoint({
-        //     success: function(data) {
-        //         checkpoints.push({
-        //             latitude: data.checkpoint.lat,
-        //             longitude: data.checkpoint.lon
-        //         });
-        //         $scope.refreshProperty = true;
-        //     }
-        // });
+    $scope.reportCurrentLoc = function($scope, geolocation) {
+        console.log('# report current loc');
+        serviceAPI.createCheckpoint({
+            success: function(data) {
+                checkpoints.push({
+                    latitude: data.checkpoint.lat,
+                    longitude: data.checkpoint.lon
+                });
+            }
+        });
     };
 
     $scope.refreshMap = function() {
@@ -78,13 +76,21 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate) {
 
         $scope.refreshProperty = true;
     };
+
+    $scope.report = function() {
+        console.log('# report on map');
+        $navigate.go('/report');
+    };
 }
 
-function ReportCtrl($scope, geolocation, $navigate) {
+function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
     console.log('# in report ctrl');
 
+    var checkpoints = [];
     var geo = geolocation.getGeo();
     google.maps.visualRefresh = true;
+
+    var markedLoc = {};
 
     angular.extend($scope, {
 
@@ -113,15 +119,36 @@ function ReportCtrl($scope, geolocation, $navigate) {
 
         eventsProperty: {
           click: function (mapModel, eventName, originalEventArgs) {
-            // 'this' is the directive's scope
-            $log.log("user defined event on map directive with scope", this);
-            $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
+            markedLoc['lat'] = originalEventArgs[0].latLng.jb;
+            markedLoc['lon'] = originalEventArgs[0].latLng.kb;
           }
         }
     });
 
     $scope.back2Map = function() {
         $navigate.go('/main');
+    };
+
+    $scope.confirmReport = function() {
+        console.log('# report selected loc');
+
+        if (!markedLoc.lat || !markedLoc.lon) {
+            alert('need to mark a loc');
+
+            return;
+        }
+
+        serviceAPI.createCheckpoint({
+            'lat': markedLoc.lat,
+            'lon': markedLoc.lon,
+            success: function(data) {
+                checkpoints.push({
+                    latitude: data.checkpoint.lat,
+                    longitude: data.checkpoint.lon
+                });
+                $scope.refreshProperty = true;
+            }
+        });
     };
 
 }

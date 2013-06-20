@@ -31,13 +31,22 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
 
     var apis = {
         createCheckpoint: function(params) {
-            var geo = geolocation.getGeo();
+            var reqBody = {};
+
+            if (params.lat && params.lon) {
+                console.log('# reporting marked loc');
+                reqBody['lat'] = params.lat;
+                reqBody['lon'] = params.lon;
+            } else {
+                console.log('# reporting current loc');
+                var geo = geolocation.getGeo();
+                reqBody['lat'] = geo.lat;
+                reqBody['lon'] = geo.lon;
+            }
+
             var urlStr = apiUrl + '/checkpoints';
 
-            $http({method: 'POST', url: urlStr, data: {
-                lat: geo.lat,
-                lon: geo.lon
-            }}).
+            $http({method: 'POST', url: urlStr, data: reqBody}).
             success(function (data, status, headers, config) {
                 console.log(data);
 
