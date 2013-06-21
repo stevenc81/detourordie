@@ -7,18 +7,24 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'ajoslin.mobile-
             otherwise({redirectTo: '/main'});
     });
 
-function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate) {
+function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
     console.log('# in main control');
-
     var checkpoints = [];
     serviceAPI.listCheckpoints({
+        'maxResults': 100,
+        'pageToken': 1,
         success: function(data) {
             for (var i = 0; i < data.items.length; i++) {
+                var adjustedTime = moment(data.items[i].timestamp._d).
+                                format('MM-DD HH:mm');
                 checkpoints.push({
                     latitude: data.items[i].lat,
-                    longitude: data.items[i].lon
+                    longitude: data.items[i].lon,
+                    infoWindow: adjustedTime
                 });
             }
+
+            $scope.refreshProperty = true;
         }
     });
 
@@ -59,7 +65,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate) {
         }
     });
 
-    $scope.reportCurrentLoc = function($scope, geolocation) {
+    $scope.reportCurrentLoc = function() {
         console.log('# report current loc');
         serviceAPI.createCheckpoint({
             success: function(data) {
@@ -67,6 +73,8 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate) {
                     latitude: data.checkpoint.lat,
                     longitude: data.checkpoint.lon
                 });
+
+                $scope.refreshProperty = true;
             }
         });
     };
@@ -129,7 +137,7 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
         $navigate.go('/main');
     };
 
-    $scope.confirmReport = function() {
+    $scope.saveReport = function() {
         console.log('# report selected loc');
 
         if (!markedLoc.lat || !markedLoc.lon) {
@@ -147,6 +155,8 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
                     longitude: data.checkpoint.lon
                 });
                 $scope.refreshProperty = true;
+
+                $navigate.go('/main');
             }
         });
     };

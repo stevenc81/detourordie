@@ -26,6 +26,10 @@ app.factory('geolocation', ['$window', function ($window) {
     };
 }]);
 
+app.factory('moment', ['$window', function($window) {
+    return $window.moment;
+}]);
+
 app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
     var apiUrl = 'http://dod-api.jit.su';
 
@@ -35,8 +39,8 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
 
             if (params.lat && params.lon) {
                 console.log('# reporting marked loc');
-                reqBody['lat'] = params.lat;
-                reqBody['lon'] = params.lon;
+                reqBody['lat'] = params.lat.toString();
+                reqBody['lon'] = params.lon.toString();
             } else {
                 console.log('# reporting current loc');
                 var geo = geolocation.getGeo();
@@ -60,6 +64,12 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
         },
         listCheckpoints: function(params) {
             var urlStr = apiUrl + '/checkpoints';
+
+            var maxResults = params.maxResults? params.maxResults : 10,
+            pageToken = params.pageToken? params.pageToken : 1;
+
+            urlStr += '?maxResults=' + maxResults;
+            urlStr += '&pageToken=' + pageToken;
 
             $http({method: 'GET', url: urlStr}).
             success(function (data, status, headers, config) {

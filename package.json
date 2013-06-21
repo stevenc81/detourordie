@@ -1,7 +1,7 @@
 {
   "name": "dod-api",
   "subdomain": "dod-api",
-  "version": "0.0.1-8",
+  "version": "0.0.1-12",
   "private": true,
   "scripts": {
     "start": "node app.js"
@@ -11,7 +11,8 @@
     "jade": "*",
     "less-middleware": "*",
     "flow": "*",
-    "mongodb": "*"
+    "mongodb": "*",
+    "moment": "*"
   },
   "engines": {
     "node": "0.8.x"
