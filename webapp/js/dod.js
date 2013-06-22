@@ -7,9 +7,47 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'ajoslin.mobile-
             otherwise({redirectTo: '/main'});
     });
 
+app.run(function ($rootScope, $location) {
+    // New look for Google Maps
+    google.maps.visualRefresh = true;
+});
+
 function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
     console.log('# in main control');
+
     var checkpoints = [];
+    angular.extend($scope, {
+        position: {
+                  coords: {
+                    latitude: 0,
+                    longitude: 0
+                  }
+        },
+        centerProperty: {
+            latitude: 0,
+            longitude: 0
+        },
+
+        zoomProperty: 16,
+
+        markersProperty: checkpoints
+    });
+
+    geolocation.getGeo({
+        success: function(geo) {
+            angular.extend($scope, {
+                position: {
+                  coords: {
+                    latitude: geo.lat,
+                    longitude: geo.lon
+                  }
+                }
+            });
+
+            $scope.$apply();
+        }
+    });
+
     serviceAPI.listCheckpoints({
         'maxResults': 100,
         'pageToken': 1,
@@ -25,43 +63,6 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
             }
 
             $scope.refreshProperty = true;
-        }
-    });
-
-    var geo = geolocation.getGeo();
-    google.maps.visualRefresh = true;
-
-    angular.extend($scope, {
-
-        position: {
-          coords: {
-            latitude: geo.lat,
-            longitude: geo.lon
-          }
-        },
-
-        /** the initial center of the map */
-        centerProperty: {
-            latitude: geo.lat,
-            longitude: geo.lon
-        },
-
-        /** the initial zoom level of the map */
-        zoomProperty: 16,
-
-        /** list of markers to put in the map */
-        markersProperty: checkpoints,
-
-        // These 2 properties will be set when clicking on the map
-        clickedLatitudeProperty: null,
-        clickedLongitudeProperty: null,
-
-        eventsProperty: {
-          // click: function (mapModel, eventName, originalEventArgs) {
-          //   // 'this' is the directive's scope
-          //   $log.log("user defined event on map directive with scope", this);
-          //   $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-          // }
         }
     });
 

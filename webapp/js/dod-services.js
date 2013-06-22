@@ -2,13 +2,13 @@ var app = angular.module('dod-services', []);
 
 app.factory('geolocation', ['$window', function ($window) {
     return {
-        getGeo: function () {
+        getGeo: function (params) {
             var geo = { lat: 0, lon: 0 };
 
-            if (localStorage.lat) {
-                geo.lat = localStorage.lat;
-                geo.lon = localStorage.lon;
-            }
+            // if (localStorage.lat) {
+            //     geo.lat = localStorage.lat;
+            //     geo.lon = localStorage.lon;
+            // }
 
             if ($window.navigator.geolocation) {
                 console.log('# geolocation available');
@@ -16,12 +16,14 @@ app.factory('geolocation', ['$window', function ($window) {
                     geo.lat = position.coords.latitude;
                     geo.lon = position.coords.longitude;
 
-                    localStorage.lat = geo.lat;
-                    localStorage.lon = geo.lon;
-                });
-            }
+                    // localStorage.lat = geo.lat;
+                    // localStorage.lon = geo.lon;
 
-            return geo;
+                    params.success(geo);
+                });
+            } else {
+                console.log('# couldn\'t get geolocation');
+            }
         }
     };
 }]);
