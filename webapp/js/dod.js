@@ -96,41 +96,44 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
     console.log('# in report ctrl');
 
     var checkpoints = [];
-    var geo = geolocation.getGeo();
-    google.maps.visualRefresh = true;
-
     var markedLoc = {};
 
     angular.extend($scope, {
-
         position: {
-          coords: {
-            latitude: geo.lat,
-            longitude: geo.lon
-          }
+                  coords: {
+                    latitude: 0,
+                    longitude: 0
+                  }
         },
-
-        /** the initial center of the map */
         centerProperty: {
-            latitude: geo.lat,
-            longitude: geo.lon
+            latitude: 0,
+            longitude: 0
         },
 
-        /** the initial zoom level of the map */
-        zoomProperty: 14,
+        zoomProperty: 16,
 
-        /** list of markers to put in the map */
-        markersProperty: [],
-
-        // These 2 properties will be set when clicking on the map
-        clickedLatitudeProperty: null,
-        clickedLongitudeProperty: null,
+        markersProperty: checkpoints,
 
         eventsProperty: {
           click: function (mapModel, eventName, originalEventArgs) {
             markedLoc['lat'] = originalEventArgs[0].latLng.jb;
             markedLoc['lon'] = originalEventArgs[0].latLng.kb;
           }
+        }
+    });
+
+    geolocation.getGeo({
+        success: function(geo) {
+            angular.extend($scope, {
+                position: {
+                  coords: {
+                    latitude: geo.lat,
+                    longitude: geo.lon
+                  }
+                }
+            });
+
+            $scope.$apply();
         }
     });
 
@@ -146,6 +149,8 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
 
             return;
         }
+
+        console.log(markedLoc);
 
         serviceAPI.createCheckpoint({
             'lat': markedLoc.lat,

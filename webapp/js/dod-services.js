@@ -35,34 +35,42 @@ app.factory('moment', ['$window', function($window) {
 app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
     var apiUrl = 'http://api.dev.stevenc81.com';
 
+    var _httpReq = function(params, method, urlStr, data) {
+        $http({method: method, url: urlStr, data: data}).
+        success(function (data, status, headers, config) {
+            console.log(data);
+
+            if (params && params.success) {
+                params.success(data);
+            }
+        }).
+        error(function (data, status, headers, config) {
+            console.log("# got some error");
+        });
+    };
+
     var apis = {
         createCheckpoint: function(params) {
             var reqBody = {};
+            var urlStr = apiUrl + '/checkpoints';
 
             if (params.lat && params.lon) {
                 console.log('# reporting marked loc');
                 reqBody['lat'] = params.lat.toString();
                 reqBody['lon'] = params.lon.toString();
+
+                _httpReq(params, 'POST', urlStr, reqBody);
             } else {
                 console.log('# reporting current loc');
-                var geo = geolocation.getGeo();
-                reqBody['lat'] = geo.lat;
-                reqBody['lon'] = geo.lon;
+                geolocation.getGeo({
+                    success: function(geo) {
+                        reqBody['lat'] = geo.lat;
+                        reqBody['lon'] = geo.lon;
+
+                        _httpReq(params, 'POST', urlStr, reqBody);
+                    }
+                });
             }
-
-            var urlStr = apiUrl + '/checkpoints';
-
-            $http({method: 'POST', url: urlStr, data: reqBody}).
-            success(function (data, status, headers, config) {
-                console.log(data);
-
-                if (params && params.success) {
-                    params.success(data);
-                }
-            }).
-            error(function (data, status, headers, config) {
-                console.log("# got some error");
-            });
         },
         listCheckpoints: function(params) {
             var urlStr = apiUrl + '/checkpoints';
@@ -73,17 +81,7 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
             urlStr += '?maxResults=' + maxResults;
             urlStr += '&pageToken=' + pageToken;
 
-            $http({method: 'GET', url: urlStr}).
-            success(function (data, status, headers, config) {
-                console.log(data);
-
-                if (params && params.success) {
-                    params.success(data);
-                }
-            }).
-            error(function (data, status, headers, config) {
-                console.log("# got some error");
-            });
+            _httpReq(params, 'GET', urlStr, {});
         }
     };
 
