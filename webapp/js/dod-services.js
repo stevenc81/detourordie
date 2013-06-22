@@ -33,7 +33,7 @@ app.factory('moment', ['$window', function($window) {
 }]);
 
 app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
-    var apiUrl = 'api.dev.stevenc81.com';
+    var apiUrl = 'http://api.dev.stevenc81.com';
 
     var apis = {
         createCheckpoint: function(params) {
