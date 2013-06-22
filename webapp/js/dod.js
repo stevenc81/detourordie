@@ -20,7 +20,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
                 checkpoints.push({
                     latitude: data.items[i].lat,
                     longitude: data.items[i].lon,
-                    infoWindow: adjustedTime
+                    infoWindow: 'Reported at: ' + adjustedTime
                 });
             }
 
@@ -47,7 +47,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
         },
 
         /** the initial zoom level of the map */
-        zoomProperty: 13,
+        zoomProperty: 16,
 
         /** list of markers to put in the map */
         markersProperty: checkpoints,
@@ -116,7 +116,7 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
         },
 
         /** the initial zoom level of the map */
-        zoomProperty: 13,
+        zoomProperty: 14,
 
         /** list of markers to put in the map */
         markersProperty: [],
