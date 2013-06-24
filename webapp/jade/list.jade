@@ -4,5 +4,5 @@ header.bar-title
 
 .content
     ul.list(ng-show="checkpoints.length > 0")
-        li(ng-repeat="checkpoint in checkpoints", ng-click="pinOnMap(checkpoint)")
+        li(ng-repeat="checkpoint in checkpoints", ng-click="pinOnMap(checkpoint)", ng-class="{new_item: checkpoint.age < 2, two_hour_item: checkpoint.age == 2, three_hour_item: checkpoint.age == 3, four_hour_item: checkpoint.age == 4}")
             include list_item

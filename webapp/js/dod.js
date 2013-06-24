@@ -171,9 +171,11 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
     var currentGeo;
 
     var _prepareData = function(data) {
+        console.log(moment().diff(data.timestamp, 'hours'));
         var rv = {
             'timestamp': data.timestamp,
             'ago': moment(data.timestamp).fromNow(),
+            'age': moment().diff(data.timestamp, 'hours'),
             'distance': Math.round(googleGeometry.spherical.computeDistanceBetween(
                 new google.maps.LatLng(currentGeo.lat, currentGeo.lon),
                 new google.maps.LatLng(data.lat, data.lon))),
@@ -201,8 +203,6 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
                         var rv = moment(b.timestamp).diff(moment(a.timestamp));
                         return rv;
                     });
-
-                    console.log($scope.checkpoints);
                 }
             });
 

@@ -2,10 +2,19 @@
   height: 100%;
   width: 100%;
 }
-.newItem {
-  background-color: #e4e1d2;
-}
 #main-map {
   height: 90%;
   width: 100%;
+}
+.new_item {
+  background-color: red;
+}
+.two_hour_item {
+  background-color: orange;
+}
+.three_hour_item {
+  background-color: yellow;
+}
+.four_hour_item {
+  background-color: green;
 }
