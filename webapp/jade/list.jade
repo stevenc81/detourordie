@@ -3,23 +3,6 @@ header.bar-title
     h1.title List
 
 .content
-    ul.list
-        li(ng-repeat="checkpoint in newCheckpoints", ng-click="pinOnMap()")
-            a {{checkpoint}}
-                span.chevron
-    ul.list
-        li(ng-repeat="checkpoint in oneHourCheckpoints", ng-click="pinOnMap()")
-            a {{checkpoint}}
-                span.chevron
-    ul.ist
-        li(ng-repeat="checkpoint in twoHourCheckpoints", ng-click="pinOnMap()")
-            a {{checkpoint}}
-                span.chevron
-    ul.list
-        li(ng-repeat="checkpoint in threeHourCheckpoints", ng-click="pinOnMap()")
-            a {{checkpoint}}
-                span.chevron
-    ul.list
-        li(ng-repeat="checkpoint in oldCheckpoints", ng-click="pinOnMap()")
-            a {{checkpoint}}
-                span.chevron
+    ul.list(ng-show="checkpoints.length > 0")
+        li(ng-repeat="checkpoint in checkpoints", ng-click="pinOnMap(checkpoint)")
+            include list_item

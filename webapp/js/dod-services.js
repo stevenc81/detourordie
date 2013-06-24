@@ -32,13 +32,17 @@ app.factory('moment', ['$window', function($window) {
     return $window.moment;
 }]);
 
+app.factory('googleGeometry', ['$window', function($window) {
+    return $window.google.maps.geometry;
+}]);
+
 app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
     var apiUrl = 'http://api.dev.stevenc81.com';
 
     var _httpReq = function(params, method, urlStr, data) {
         $http({method: method, url: urlStr, data: data}).
         success(function (data, status, headers, config) {
-            console.log(data);
+            console.log('# api return data: ' + data);
 
             if (params && params.success) {
                 params.success(data);

@@ -1,8 +1,8 @@
 header.bar-title
     a.button(ng-click="listView()") List
     h1.title Checkpoints
-    a.button(ng-click="report()") Reoprt on Map
+    a.button(ng-click="report()") Reoprt
 
 .content
-    .google-map(center="position.coords", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="false", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")
-    a.button-main.button-block(ng-click="reportCurrentLoc()") Here is a checkpoint
+    .google-map#main-map(center="position.coords", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="false", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")
+    a.button-main.button-block(ng-click="reportCurrentLoc()") Checkpoint here!
