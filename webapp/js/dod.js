@@ -4,6 +4,7 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'ajoslin.mobile-
             when('/', {controller: MainCtrl, templateUrl: 'main.html'}).
             when('/main', {controller: MainCtrl, templateUrl: 'main.html'}).
             when('/report', {controller: ReportCtrl, templateUrl: 'report.html'}).
+            when('/list', {controller: ListCtrl, templateUrl: 'list.html'}).
             otherwise({redirectTo: '/main'});
     });
 
@@ -28,7 +29,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
             longitude: 0
         },
 
-        zoomProperty: 16,
+        zoomProperty: 15,
 
         markersProperty: checkpoints
     });
@@ -53,16 +54,14 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
         'pageToken': 1,
         success: function(data) {
             for (var i = 0; i < data.items.length; i++) {
-                var adjustedTime = moment(data.items[i].timestamp._d).
+                var formattedTime = moment(data.items[i].timestamp).
                                 format('MM-DD HH:mm');
                 checkpoints.push({
                     latitude: data.items[i].lat,
                     longitude: data.items[i].lon,
-                    infoWindow: 'Reported at: ' + adjustedTime
+                    infoWindow: 'Reported at: ' + formattedTime
                 });
             }
-
-            $scope.refreshProperty = true;
         }
     });
 
@@ -74,16 +73,13 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
                     latitude: data.checkpoint.lat,
                     longitude: data.checkpoint.lon
                 });
-
-                $scope.refreshProperty = true;
             }
         });
     };
 
-    $scope.refreshMap = function() {
-        console.log('# refresh map');
-
-        $scope.refreshProperty = true;
+    $scope.listView = function() {
+        console.log('# list view');
+        $navigate.go('/list');
     };
 
     $scope.report = function() {
@@ -110,7 +106,7 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
             longitude: 0
         },
 
-        zoomProperty: 16,
+        zoomProperty: 13,
 
         markersProperty: checkpoints,
 
@@ -160,11 +156,64 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
                     latitude: data.checkpoint.lat,
                     longitude: data.checkpoint.lon
                 });
-                $scope.refreshProperty = true;
 
                 $navigate.go('/main');
             }
         });
     };
+}
 
+function ListCtrl($scope, moment, serviceAPI, geolocation) {
+    console.log('# in list ctrl');
+
+    geolocation.getGeo({
+        success: function(geo) {
+            $scope.geo = geo;
+        }
+    });
+
+    $scope.newCheckpoints = [];
+    $scope.oneHourCheckpoints = [];
+    $scope.twoHourCheckpoints = [];
+    $scope.threeHourCheckpoints = [];
+    $scope.oldCheckpoints = [];
+
+    var checkpoints = [];
+    serviceAPI.listCheckpoints({
+        'maxResults': 100,
+        'pageToken': 1,
+        success: function(data) {
+            for (var i = 0; i < data.items.length; i++) {
+                var timestamp = data.items[i].timestamp;
+                var formattedTime = moment(timestamp).format('MM-DD HH:mm');
+
+                var timediff = moment().diff(timestamp, 'hours');
+                switch(timediff) {
+                    case 0:
+                        $scope.newCheckpoints.push(data.items[i]);
+                        break;
+                    case 1:
+                        $scope.oneHourCheckpoints.push(data.items[i]);
+                        break;
+                    case 2:
+                        $scope.twoHourCheckpoints.push(data.items[i]);
+                        break;
+                    case 3:
+                        $scope.threeHourCheckpoints.push(data.items[i]);
+                        break;
+
+                    default:
+                        $scope.oldCheckpoints.push(data.items[i]);
+                }
+            }
+        }
+    });
+
+    $scope.back2Map = function() {
+        $navigate.go('/main');
+    };
+
+    $scope.pinOnMap = function() {
+        console.log('# pin on map');
+    };
 }

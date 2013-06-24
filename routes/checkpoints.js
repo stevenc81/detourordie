@@ -42,7 +42,7 @@ exports.create = function(req, res, next) {
             collection.insert({
                 'lat': lat,
                 'lon': lon,
-                'timestamp': moment()}, this);
+                'timestamp': moment().utc()}, this);
         },
         function(err, result) {
             if (err) {
