@@ -5,13 +5,14 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'ajoslin.mobile-
             when('/main', {controller: MainCtrl, templateUrl: 'main.html'}).
             when('/report', {controller: ReportCtrl, templateUrl: 'report.html'}).
             when('/list', {controller: ListCtrl, templateUrl: 'list.html'}).
-            when('/pin_map/:lat/:lon', {controller: PinMapCtrl, templateUrl: 'pin_map.html'}).
+            when('/pin_map/:lat/:lon/:c_time', {controller: PinMapCtrl, templateUrl: 'pin_map.html'}).
             otherwise({redirectTo: '/main'});
     });
 
 app.run(function ($rootScope, $location) {
     // New look for Google Maps
     google.maps.visualRefresh = true;
+    moment.lang('zh-tw');
 });
 
 function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
@@ -55,12 +56,10 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
         'pageToken': 1,
         success: function(data) {
             for (var i = 0; i < data.items.length; i++) {
-                var formattedTime = moment(data.items[i].timestamp).
-                                format('MM-DD hh:mm A');
                 checkpoints.push({
                     latitude: data.items[i].lat,
                     longitude: data.items[i].lon,
-                    infoWindow: 'Reported at: ' + formattedTime
+                    infoWindow: moment(data.items[i].timestamp).fromNow()
                 });
             }
         }
@@ -171,7 +170,6 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
     var currentGeo;
 
     var _prepareData = function(data) {
-        console.log(moment().diff(data.timestamp, 'hours'));
         var rv = {
             'timestamp': data.timestamp,
             'ago': moment(data.timestamp).fromNow(),
@@ -218,15 +216,16 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
     $scope.pinOnMap = function(checkpoint) {
         console.log('# pin on map');
 
-        $navigate.go('/pin_map/' + checkpoint.lat + '/' + checkpoint.lon, 'slide');
+        $navigate.go('/pin_map/' + checkpoint.lat + '/' + checkpoint.lon + '/' + checkpoint.timestamp, 'slide');
     };
 }
 
-function PinMapCtrl($scope, $routeParams, $navigate) {
+function PinMapCtrl($scope, $routeParams, $navigate, moment) {
     console.log('# in pin map ctrl');
 
     var latitude = $routeParams.lat;
     var longitude = $routeParams.lon;
+    var c_time = $routeParams.c_time;
 
     angular.extend($scope, {
         position: {
@@ -242,7 +241,10 @@ function PinMapCtrl($scope, $routeParams, $navigate) {
 
         zoomProperty: 13,
 
-        markersProperty: [{'latitude': latitude, 'longitude': longitude}]
+        markersProperty: [{
+            'latitude': latitude,
+            'longitude': longitude,
+            'infoWindow': moment(c_time).fromNow()}]
     });
 
     $scope.back2List = function() {
