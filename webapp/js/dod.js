@@ -1,4 +1,4 @@
-var app = angular.module('dod', ['google-maps', 'dod-services', 'ajoslin.mobile-navigate']).
+var app = angular.module('dod', ['google-maps', 'dod-services', 'dod-directives', 'ajoslin.mobile-navigate']).
     config(function ($routeProvider) {
         $routeProvider.
             when('/', {controller: MainCtrl, templateUrl: 'main.html'}).
@@ -8,7 +8,12 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'ajoslin.mobile-
             when('/pin_map/:lat/:lon/:c_time', {controller: PinMapCtrl, templateUrl: 'pin_map.html'}).
             otherwise({redirectTo: '/main'});
     })
-    .run(function () {
+    .run(function ($route, $http, $templateCache) {
+         angular.forEach($route.routes, function(r) {
+            if (r.templateUrl) {
+              $http.get(r.templateUrl, {cache: $templateCache});
+            }
+        });
         // New look for Google Maps
         google.maps.visualRefresh = true;
         moment.lang('zh-tw');
