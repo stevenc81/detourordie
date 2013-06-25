@@ -1,5 +1,21 @@
 extends layout
 
+block jsext
+    script
+        $(document).ready(function () {
+            var is_touch_device = 'ontouchstart' in document.documentElement;
+            if (!is_touch_device) {
+                console.log("Not a touch device");
+            } else {
+                console.log("Is a touch device");
+                // unleash the clicking power of touch device
+                window.addEventListener('load', function() {
+                    console.log('# loaded, applying FastClick');
+                    new FastClick(document.body);
+                }, false);
+            }
+        });
+
 block content
     div(ng-view)
 

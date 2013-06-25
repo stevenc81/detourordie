@@ -7,15 +7,14 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'ajoslin.mobile-
             when('/list', {controller: ListCtrl, templateUrl: 'list.html'}).
             when('/pin_map/:lat/:lon/:c_time', {controller: PinMapCtrl, templateUrl: 'pin_map.html'}).
             otherwise({redirectTo: '/main'});
+    })
+    .run(function () {
+        // New look for Google Maps
+        google.maps.visualRefresh = true;
+        moment.lang('zh-tw');
     });
 
-app.run(function ($rootScope, $location) {
-    // New look for Google Maps
-    google.maps.visualRefresh = true;
-    moment.lang('zh-tw');
-});
-
-function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
+function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dialogBox) {
     console.log('# in main control');
 
     var checkpoints = [];
@@ -51,6 +50,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
         }
     });
 
+    dialogBox.loading();
     serviceAPI.listCheckpoints({
         'maxResults': 100,
         'pageToken': 1,
@@ -62,33 +62,64 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment) {
                     infoWindow: moment(data.items[i].timestamp).fromNow()
                 });
             }
+
+            dialogBox.hideOverlay();
+        },
+        error: function() {
+            dialogBox.error();
+            dialogBox.hideOverlay();
         }
     });
 
     $scope.reportCurrentLoc = function() {
         console.log('# report current loc');
-        serviceAPI.createCheckpoint({
-            success: function(data) {
-                checkpoints.push({
-                    latitude: data.checkpoint.lat,
-                    longitude: data.checkpoint.lon
+
+        var _reportHere = function(sayYes) {
+            if (sayYes) {
+                geolocation.getGeo({
+                    success: function(geo) {
+                        dialogBox.loading();
+                        serviceAPI.createCheckpoint({
+                            'lat': geo.lat,
+                            'lon': geo.lon,
+                            success: function(data) {
+                                checkpoints.push({
+                                    latitude: data.checkpoint.lat,
+                                    longitude: data.checkpoint.lon
+                                });
+
+                                dialogBox.success();
+                                dialogBox.hideOverlay();
+                            },
+                            error: function() {
+                                dialogBox.error();
+                                dialogBox.hideOverlay();
+                            }
+                        });
+                    },
+                    error: function() {
+                        dialogBox.error();
+                        dialogBox.hideOverlay();
+                    }
                 });
             }
-        });
+        };
+
+        dialogBox.confirm('現在的位置有臨檢？', _reportHere);
     };
 
     $scope.listView = function() {
         console.log('# list view');
-        $navigate.go('/list');
+        $navigate.go('/list', 'slide');
     };
 
     $scope.report = function() {
         console.log('# report on map');
-        $navigate.go('/report');
+        $navigate.go('/report', 'slide');
     };
 }
 
-function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
+function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI, dialogBox) {
     console.log('# in report ctrl');
 
     var checkpoints = [];
@@ -142,13 +173,12 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
         console.log('# report selected loc');
 
         if (!markedLoc.lat || !markedLoc.lon) {
-            alert('need to mark a loc');
+            dialogBox.alert('必需標出一個地點');
 
             return;
         }
 
-        console.log(markedLoc);
-
+        dialogBox.loading();
         serviceAPI.createCheckpoint({
             'lat': markedLoc.lat,
             'lon': markedLoc.lon,
@@ -158,13 +188,19 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI) {
                     longitude: data.checkpoint.lon
                 });
 
-                $navigate.go('/main');
+                dialogBox.success();
+                dialogBox.hideOverlay();
+                $navigate.go('/main', 'slide');
+            },
+            error: function() {
+                dialogBox.error();
+                dialogBox.hideOverlay();
             }
         });
     };
 }
 
-function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeometry) {
+function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeometry, dialogBox) {
     console.log('# in list ctrl');
 
     var currentGeo;
@@ -184,6 +220,7 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
         return rv;
     };
 
+    dialogBox.loading();
     geolocation.getGeo({
         success: function(geo) {
             currentGeo = geo;
@@ -201,6 +238,12 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
                         var rv = moment(b.timestamp).diff(moment(a.timestamp));
                         return rv;
                     });
+
+                    dialogBox.hideOverlay();
+                },
+                error: function() {
+                    dialogBox.error();
+                    dialogBox.hideOverlay();
                 }
             });
 
@@ -210,11 +253,11 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
     $scope.back2Map = function() {
         console.log('# back to main');
 
-        $navigate.go('/main');
+        $navigate.go('/main', 'slide');
     };
 
     $scope.pinOnMap = function(checkpoint) {
-        console.log('# pin on map');
+        console.log('# pin on map', 'slide');
 
         $navigate.go('/pin_map/' + checkpoint.lat + '/' + checkpoint.lon + '/' + checkpoint.timestamp, 'slide');
     };
@@ -249,8 +292,7 @@ function PinMapCtrl($scope, $routeParams, $navigate, moment) {
 
     $scope.back2List = function() {
         console.log('# back to list');
-
-        $navigate.go('/list');
+        $navigate.go('/list', 'slide');
     };
 
 }

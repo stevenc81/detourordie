@@ -205,7 +205,7 @@
           var infoWindow = new google.maps.InfoWindow({
             content: infoWindowContent
           });
-          infoWindow.open(_instance, marker);
+          // infoWindow.open(_instance, marker);
 
           google.maps.event.addListener(marker, 'click', function() {
             if (currentInfoWindow != null) {
