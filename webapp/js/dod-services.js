@@ -57,7 +57,7 @@ app.factory('dialogBox', ['$window', function ($window) {
         success: function (opt) {
             var option = opt ? opt : {};
             overlay = iosOverlay({
-                text: option.text ? option.text : "成功!",
+                text: option.text ? option.text : "好了!",
                 duration: option.duration ? option.duration : 2e3,
                 icon: "img/check.png"
             });
@@ -94,7 +94,7 @@ app.factory('dialogBox', ['$window', function ($window) {
             var spinner = new Spinner(spinOpts).spin(target);
 
             overlay = iosOverlay({
-                text: "載入中",
+                text: "等一下",
                 duration: 2e3,
                 spinner: spinner,
                 onhide: function () {

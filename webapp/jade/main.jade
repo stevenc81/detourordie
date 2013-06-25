@@ -1,7 +1,7 @@
 header.bar-title
     a.button(ng-click="listView()") 列表
     h1.title 所有臨檢站
-    a.button(ng-click="report()") 回報
+    a.button-next(ng-click="report()") 回報其他
 
 .content
     .google-map#main-map(center="position.coords", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="false", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")
