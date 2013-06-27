@@ -9,8 +9,6 @@ process.env['MONGODB_URL'] = 'mongodb://' + conf.mongo.host + ':' +
 global.db = require('./mongoconnect');
 
 var express = require('express')
-  // , routes = require('./routes')
-  // , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , checkpoints = require('./routes/checkpoints');
@@ -19,17 +17,11 @@ var app = express();
 
 app.configure(function(){
   app.set('port', process.env.PORT || 9000);
-  app.set('views', __dirname + '/views');
-  app.set('view engine', 'jade');
   app.use(express.favicon());
-  app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(express.cookieParser('your secret here'));
-  app.use(express.session());
   app.use(app.router);
-  app.use(require('less-middleware')({ src: __dirname + '/public' }));
-  app.use(express.static(path.join(__dirname, 'public')));
 });
 
 // all environments
@@ -60,9 +52,6 @@ app.all('/*', function (req, res, next) {
 // handle OPTIONS requests from the browser
 app.options("*", function (req,res,next) { res.send(200); });
 
-
-// app.get('/', routes.index);
-// app.get('/users', user.list);
 app.get('/checkpoints', checkpoints.list);
 app.post('/checkpoints', checkpoints.create);
 
