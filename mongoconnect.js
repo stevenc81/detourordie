@@ -2,7 +2,9 @@ var Db = require('mongodb').Db,
     Server = require('mongodb').Server,
     url = require('url');
 
-var connectionUri = url.parse(process.env.MONGODB_URL);
+var connectionUri = url.parse(process.env['MONGODB_URL']);
+
+console.log('# Connecting with connection string: ' + process.env['MONGODB_URL']);
 
 var server = new Server(connectionUri.hostname, connectionUri.port, conf.mongo.host_opts);
 var db = new Db(connectionUri.pathname.substr(1), server, conf.mongo.opts);
