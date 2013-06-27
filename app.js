@@ -1,6 +1,7 @@
 global.conf = require('./config');
 
 if (!process.env['MONGODB_URL']) {
+  console.log('# Cannot find env for DB URL, use predefined');
   process.env['MONGODB_URL'] = 'mongodb://' + conf.mongo.host + ':' +
                               conf.mongo.port + '/' + conf.mongo.dbname;
 }
