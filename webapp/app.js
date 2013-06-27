@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 
 app.configure(function () {
-    app.use(express.logger('dev'));
+    app.set('port', process.env.PORT || 9001);
     app.use(express.bodyParser());
     app.use(express.favicon());
     app.use(express.static( __dirname + '/' ));
@@ -11,10 +11,20 @@ app.configure(function () {
     app.use(app.router);
 });
 
-app.configure('development', function() {
-    app.use(express.errorHandler());
-});
+// all environments
+app.set('title', 'dod webapp');
 
-var port = 9001;
-app.listen(port);
-console.log("# webapp listening at http://localhost:" + port);
+// development only
+if ('development' == app.get('env')) {
+// app.set('db uri', 'localhost/dev');
+    app.use(express.errorHandler());
+}
+
+// production only
+if ('production' == app.get('env')) {
+// app.set('db uri', 'n.n.n.n/prod');
+}
+
+app.listen(app.get('port'), function() {
+    console.log("Express server listening on port " + app.get('port'));
+});

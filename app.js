@@ -32,9 +32,19 @@ app.configure(function(){
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
-app.configure('development', function(){
-  app.use(express.errorHandler());
-});
+// all environments
+app.set('title', 'dod api');
+
+// development only
+if ('development' == app.get('env')) {
+// app.set('db uri', 'localhost/dev');
+    app.use(express.errorHandler());
+}
+
+// production only
+if ('production' == app.get('env')) {
+// app.set('db uri', 'n.n.n.n/prod');
+}
 
 /*
  * CORS Support in Node.js web app written with Express
