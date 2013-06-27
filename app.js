@@ -1,11 +1,10 @@
 global.conf = require('./config');
 
-process.env['MONGODB_URL'] = 'mongodb://' + conf.mongo.host + ':' +
-                            conf.mongo.port + '/' + conf.mongo.dbname;
+if (!process.env['MONGODB_URL']) {
+  process.env['MONGODB_URL'] = 'mongodb://' + conf.mongo.host + ':' +
+                              conf.mongo.port + '/' + conf.mongo.dbname;
+}
 
-/**
- * Module dependencies.
- */
 global.db = require('./mongoconnect');
 
 var express = require('express')
