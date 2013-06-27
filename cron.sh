@@ -1,1 +1,0 @@
-mongo localhost:27017/detourordie  dbcleanup.js
