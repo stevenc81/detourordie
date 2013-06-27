@@ -56,5 +56,5 @@ app.get('/checkpoints', checkpoints.list);
 app.post('/checkpoints', checkpoints.create);
 
 app.listen(app.get('port'), function(){
-  console.log("Express server listening on port " + app.get('port'));
+  console.log("Express server listening on port " + app.get('port') + ' with mode ' + process.env.ENV_NODE);
 });
