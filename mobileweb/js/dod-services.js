@@ -1,17 +1,81 @@
 var app = angular.module('dod-services', []);
 
+app.factory('Facebook', ['$rootScope', function ($rootScope) {
+
+    var self = this;
+    this.auth = null;
+
+    return {
+
+        getAuth: function () {
+            return self.auth;
+        },
+
+        getLoginStatus: function (onConnected) {
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    // connected
+                    console.log(response);
+                    self.auth = response.authResponse;
+
+                    if (onConnected) {
+                        console.log('# calling onConnected callback');
+                        onConnected();
+                    }
+
+                    $rootScope.$broadcast('fb-connected');
+                } else if (response.status === 'not_authorized') {
+                    // not_authorized
+                    console.log('# not_authorized');
+                    $rootScope.$broadcast("fb-need-login");
+                } else {
+                    // not_logged_in
+                    console.log('# not_logged_in');
+                    $rootScope.$broadcast('fb-need-login');
+                }
+            });
+        },
+
+        login: function () {
+            console.log('# login');
+            FB.login(function(response) {
+                if (response.authResponse) {
+                    console.log('[Facebook] logged in');
+                    console.log(response);
+                    self.auth = response.authResponse;
+                    $rootScope.$broadcast("fb-login");
+                } else {
+                    console.log('Facebook login failed', response);
+                }
+            });
+        },
+
+        logout: function () {
+            console.log('# logout');
+            FB.logout(function(response) {
+                if (response) {
+                    self.auth = null;
+                } else {
+                    console.log('Facebook logout failed.', response);
+                }
+            });
+        }
+    };
+}]);
+
 app.factory('geolocation', ['$window', function ($window) {
     return {
         getGeo: function (params) {
             var geo = { lat: 0, lon: 0 };
 
             if (localStorage.lat && localStorage.lon) {
+                console.log('# geolocation available from localStorage');
                 geo.lat = localStorage.lat;
                 geo.lon = localStorage.lon;
-            }
 
-            if ($window.navigator.geolocation) {
-                console.log('# geolocation available');
+                params.success(geo);
+            } else if ($window.navigator.geolocation) {
+                console.log('# geolocation available from browser');
 
                 $window.navigator.geolocation.getCurrentPosition(function (position) {
                     geo.lat = position.coords.latitude;
@@ -111,7 +175,8 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
     var _httpReq = function(params, method, urlStr, data) {
         $http({method: method, url: urlStr, data: data}).
         success(function (data, status, headers, config) {
-            console.log('# api return data: ' + data);
+            console.log('# api return data: ');
+            console.log(data);
 
             if (params && params.success) {
                 params.success(data);
@@ -125,6 +190,7 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
 
     var apis = {
         createCheckpoint: function(params) {
+            console.log('# calling api to create a checkpoint');
             var reqBody = {};
             var urlStr = apiUrl + '/checkpoints';
 
@@ -135,6 +201,7 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
             _httpReq(params, 'POST', urlStr, reqBody);
         },
         listCheckpoints: function(params) {
+            console.log('# calling api for a list of checkpoints');
             var urlStr = apiUrl + '/checkpoints';
 
             var maxResults = params.maxResults? params.maxResults : 10,

@@ -6,7 +6,7 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'dod-directives'
             when('/report', {controller: ReportCtrl, templateUrl: 'report.html'}).
             when('/list', {controller: ListCtrl, templateUrl: 'list.html'}).
             when('/pin_map/:lat/:lon/:c_time', {controller: PinMapCtrl, templateUrl: 'pin_map.html'}).
-            otherwise({redirectTo: '/main'});
+            otherwise({redirectTo: '/'});
     })
     .run(function ($route, $http, $templateCache) {
          angular.forEach($route.routes, function(r) {
@@ -50,8 +50,6 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
                   }
                 }
             });
-
-            $scope.$apply();
         },
         error: function() {
             dialogBox.error({
@@ -249,6 +247,7 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
                         return rv;
                     });
 
+                    console.log('# checkpoint sorting completed');
                     dialogBox.hideOverlay();
                 },
                 error: function() {

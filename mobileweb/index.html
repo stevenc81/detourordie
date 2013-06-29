@@ -1,4 +1,4 @@
-<!DOCTYPE html><html ng-app="dod"><head><meta charset="utf-8"><meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><title>安全酒駕</title><link rel="stylesheet" href="css/libs/ratchet.css"><link rel="stylesheet" href="css/libs/mobile-nav.css"><link rel="stylesheet" href="css/libs/iosOverlay.css"><link rel="stylesheet" href="css/dod.css"><script src="js/libs/jquery-1.10.1.min.js"></script><script src="js/libs/angular.min.js"></script><script src="js/libs/ratchet.js"></script><script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=true&amp;libraries=geometry"></script><script src="js/libs/angular-google-maps.js"></script><script src="js/libs/mobile-nav.min.js"></script><script src="js/libs/moment.min.js"></script><script src="js/libs/spin.min.js"></script><script src="js/libs/zh-tw.js"></script><script src="js/libs/iosOverlay.js"></script><script src="js/libs/fastclick.js"></script><script src="js/dod.js"></script><script src="js/dod-services.js"></script><script src="js/dod-directives.js"></script><script>$(document).ready(function () {
+<!DOCTYPE html><html ng-app="dod"><head><meta charset="utf-8"><meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><title>安全酒駕</title><link rel="stylesheet" href="css/libs/ratchet.css"><link rel="stylesheet" href="css/libs/mobile-nav.css"><link rel="stylesheet" href="css/libs/iosOverlay.css"><link rel="stylesheet" href="css/dod.css"><script src="js/libs/jquery-1.10.1.min.js"></script><script src="js/libs/angular.min.js"></script><script src="js/libs/ratchet.js"></script><script src="https://maps.googleapis.com/maps/api/js?v=3.exp&amp;sensor=true&amp;libraries=geometry&amp;language=zh_TW"></script><script src="js/libs/angular-google-maps.js"></script><script src="js/libs/mobile-nav.min.js"></script><script src="js/libs/moment.min.js"></script><script src="js/libs/spin.min.js"></script><script src="js/libs/zh-tw.js"></script><script src="js/libs/iosOverlay.js"></script><script src="js/libs/fastclick.js"></script><script src="js/dod.js"></script><script src="js/dod-services.js"></script><script src="js/dod-directives.js"></script><script>$(document).ready(function () {
     var is_touch_device = 'ontouchstart' in document.documentElement;
     if (!is_touch_device) {
         console.log("Not a touch device");
@@ -11,4 +11,32 @@
         }, false);
     }
 });
-</script></head><body><div ng-view></div><script type="text/ng-template" id="main.html"><header class="bar-title"><a ng-click="listView()" class="button">列表</a><h1 class="title">所有臨檢站</h1><a ng-click="report()" class="button-next">回報其他</a></header><div class="content"><div id="main-map" center="position.coords" zoom="zoomProperty" markers="markersProperty" latitude="clickedLatitudeProperty" longitude="clickedLongitudeProperty" mark-click="false" draggable="true" fit="false" events="eventsProperty" refresh="refreshProperty" class="google-map"></div><a ng-click="reportCurrentLoc()" class="button-negative button-block">回報現在位置!</a></div></script><script type="text/ng-template" id="report.html"><header class="bar-title"><a ng-click="back2Map()" class="button-prev">取消</a><h1 class="title">標出臨檢站</h1><a ng-click="saveReport()" class="button">確定</a></header><div class="content"><div center="position.coords" zoom="zoomProperty" markers="markersProperty" latitude="clickedLatitudeProperty" longitude="clickedLongitudeProperty" mark-click="true" draggable="true" fit="false" events="eventsProperty" refresh="refreshProperty" class="google-map"></div></div></script><script type="text/ng-template" id="list.html"><header class="bar-title"><a ng-click="back2Map()" class="button-prev">返回</a><h1 class="title">臨檢站列表</h1></header><div class="content"><ul ng-show="checkpoints.length &gt; 0" class="list"><li ng-repeat="checkpoint in checkpoints" ng-click="pinOnMap(checkpoint)" ng-class="{new_item: checkpoint.age &lt; 2, two_hour_item: checkpoint.age == 2, three_hour_item: checkpoint.age == 3, four_hour_item: checkpoint.age == 4}"><div>{{checkpoint.distance}} 公尺外</div><div>{{checkpoint.ago}}</div><span class="chevron"></span></li></ul></div></script></body></html>
+
+// Additional JS functions here
+//- window.fbAsyncInit = function() {
+//-     FB.init({
+//-         appId      : '247255068642322', // App ID
+//-         channelUrl : '//safejj.com/channel.html', // Channel File
+//-         //- channelUrl : '//192.168.1.158/channel.html', // Channel File
+//-         status     : true, // check login status
+//-         cookie     : true, // enable cookies to allow the server to access the session
+//-         xfbml      : true  // parse XFBML
+//-     });
+
+    // Additional init code here
+    
+    //- console.log('# facebook-jssdk initiated');
+    //- angular.bootstrap(document, ['dod']);
+//- };
+
+//- // Load the SDK Asynchronously
+//- (function(d){
+//-     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+//-     if (d.getElementById(id)) {return;}
+//-     js = d.createElement('script'); js.id = id; js.async = true;
+//-     js.src = '//connect.facebook.net/zh_TW/all.js';
+//-     ref.parentNode.insertBefore(js, ref);
+
+//-     console.log('# facebook-jssdk loaded')
+//- }(document));
+</script></head><body><div id="fb-root"></div><div ng-view></div></body></html>
