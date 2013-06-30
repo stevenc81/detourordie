@@ -163,7 +163,7 @@ app.factory('dialogBox', ['$window', function ($window) {
 }]);
 
 app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
-    var apiUrl = 'http://127.0.0.1:9000';
+    var apiUrl = 'http://api.safejj.com';
 
     var _httpReq = function(params, method, urlStr, data) {
         $http({method: method, url: urlStr, data: data}).
