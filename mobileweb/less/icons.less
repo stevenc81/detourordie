@@ -1,0 +1,13 @@
+@imgPath: "../img";
+
+.make-icon (@url, @w, @h) {
+    display: inline-block;
+    background-image: url("@{imgPath}/@{url}");
+    background-size: 100% 100%;
+    width: @w;
+    height: @h;
+}
+
+.fb-login-btn {
+    .make-icon ("btnFB_normal@2x.png", 275px, 59px);
+}

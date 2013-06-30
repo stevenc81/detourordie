@@ -17,32 +17,32 @@ block jsext
         });
 
         // Additional JS functions here
-        //- window.fbAsyncInit = function() {
-        //-     FB.init({
-        //-         appId      : '247255068642322', // App ID
-        //-         channelUrl : '//safejj.com/channel.html', // Channel File
-        //-         //- channelUrl : '//192.168.1.158/channel.html', // Channel File
-        //-         status     : true, // check login status
-        //-         cookie     : true, // enable cookies to allow the server to access the session
-        //-         xfbml      : true  // parse XFBML
-        //-     });
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : '247255068642322', // App ID
+                //- channelUrl : '//safejj.com/channel.html', // Channel File
+                channelUrl : '//localhost/channel.html', // Channel File
+                status     : true, // check login status
+                cookie     : true, // enable cookies to allow the server to access the session
+                xfbml      : true  // parse XFBML
+            });
 
             // Additional init code here
+            console.log('# facebook-jssdk initiated');
 
-            //- console.log('# facebook-jssdk initiated');
             //- angular.bootstrap(document, ['dod']);
-        //- };
+        };
 
-        //- // Load the SDK Asynchronously
-        //- (function(d){
-        //-     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-        //-     if (d.getElementById(id)) {return;}
-        //-     js = d.createElement('script'); js.id = id; js.async = true;
-        //-     js.src = '//connect.facebook.net/zh_TW/all.js';
-        //-     ref.parentNode.insertBefore(js, ref);
+        // Load the SDK Asynchronously
+        (function(d){
+            var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement('script'); js.id = id; js.async = true;
+            js.src = '//connect.facebook.net/zh_TW/all.js';
+            ref.parentNode.insertBefore(js, ref);
 
-        //-     console.log('# facebook-jssdk loaded')
-        //- }(document));
+            console.log('# facebook-jssdk loaded')
+        }(document));
 
 block content
     #fb-root

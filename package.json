@@ -12,7 +12,8 @@
     "less-middleware": "*",
     "flow": "*",
     "mongodb": "*",
-    "moment": "*"
+    "moment": "*",
+    "fb": "*"
   },
   "engines": {
     "node": "0.8.x"

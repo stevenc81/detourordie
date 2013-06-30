@@ -3,6 +3,7 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'dod-directives'
         $routeProvider.
             when('/', {controller: MainCtrl, templateUrl: 'main.html'}).
             when('/main', {controller: MainCtrl, templateUrl: 'main.html'}).
+            when('/login', {controller: LoginCtrl, templateUrl: 'login.html'}).
             when('/report', {controller: ReportCtrl, templateUrl: 'report.html'}).
             when('/list', {controller: ListCtrl, templateUrl: 'list.html'}).
             when('/pin_map/:lat/:lon/:c_time', {controller: PinMapCtrl, templateUrl: 'pin_map.html'}).
@@ -18,6 +19,40 @@ var app = angular.module('dod', ['google-maps', 'dod-services', 'dod-directives'
         google.maps.visualRefresh = true;
         moment.lang('zh-tw');
     });
+
+function LoginCtrl($scope, Facebook, $navigate, dialogBox, serviceAPI) {
+    console.log('# in login ctrl');
+
+    setTimeout(function () {
+        Facebook.getLoginStatus(function() {
+            console.log($navigate);
+            $navigate.go('/main', 'slide');
+            if(!$scope.$$phase) $scope.$apply();
+        });
+    }, 1000);
+
+    $scope.loginFB = function() {
+        console.log('# logging in to FB');
+        Facebook.login({
+            success: function(data) {
+                serviceAPI.createAccount({
+                    'access_token': data.accessToken,
+                    success: function() {
+                        $navigate.go('/main', 'slide');
+                    },
+                    error: function() {
+                        console.log('# Create account failed');
+                        dialogBox.error();
+                    }
+                });
+            },
+            error: function() {
+                console.log('# FB login failed');
+                dialogBox.error();
+            }
+        });
+    };
+}
 
 function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dialogBox) {
     console.log('# in main control');

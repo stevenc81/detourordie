@@ -6,50 +6,43 @@ app.factory('Facebook', ['$rootScope', function ($rootScope) {
     this.auth = null;
 
     return {
-
         getAuth: function () {
             return self.auth;
         },
-
-        getLoginStatus: function (onConnected) {
+        getLoginStatus: function (next) {
             FB.getLoginStatus(function(response) {
                 if (response.status === 'connected') {
                     // connected
+                    console.log('# FB user authenticated already');
                     console.log(response);
                     self.auth = response.authResponse;
 
-                    if (onConnected) {
-                        console.log('# calling onConnected callback');
-                        onConnected();
-                    }
-
-                    $rootScope.$broadcast('fb-connected');
+                    next();
                 } else if (response.status === 'not_authorized') {
                     // not_authorized
                     console.log('# not_authorized');
-                    $rootScope.$broadcast("fb-need-login");
                 } else {
                     // not_logged_in
                     console.log('# not_logged_in');
-                    $rootScope.$broadcast('fb-need-login');
                 }
             });
         },
-
-        login: function () {
-            console.log('# login');
+        login: function (params) {
+            console.log('# Logging to FB from service');
             FB.login(function(response) {
                 if (response.authResponse) {
-                    console.log('[Facebook] logged in');
+                    console.log('# [Facebook] logged in');
                     console.log(response);
                     self.auth = response.authResponse;
-                    $rootScope.$broadcast("fb-login");
+
+                    params.success(self.auth);
                 } else {
                     console.log('Facebook login failed', response);
+
+                    params.error();
                 }
             });
         },
-
         logout: function () {
             console.log('# logout');
             FB.logout(function(response) {
@@ -170,7 +163,7 @@ app.factory('dialogBox', ['$window', function ($window) {
 }]);
 
 app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
-    var apiUrl = 'http://api.dev.stevenc81.com';
+    var apiUrl = 'http://127.0.0.1:9000';
 
     var _httpReq = function(params, method, urlStr, data) {
         $http({method: method, url: urlStr, data: data}).
@@ -189,6 +182,14 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
     };
 
     var apis = {
+        createAccount: function(params) {
+            console.log('# calling api to create a new account');
+            var urlStr = apiUrl + '/users';
+
+            _httpReq(params,'POST', urlStr, {
+                'access_token': params.access_token
+            });
+        },
         createCheckpoint: function(params) {
             console.log('# calling api to create a checkpoint');
             var reqBody = {};

@@ -1,0 +1,7 @@
+.fb-login-btn {
+  display: inline-block;
+  background-image: url("../img/btnFB_normal@2x.png");
+  background-size: 100% 100%;
+  width: 275px;
+  height: 59px;
+}
