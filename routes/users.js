@@ -4,6 +4,8 @@ var flow = require('flow'),
 exports.exchangeFBToken = function(req, res, next) {
     flow.exec(
         function() {
+            console.log('# Connecting to FB using app secret: ' +
+                process.env['FB_SECRET']);
             FB.api('oauth/access_token', {
                 'client_id': '247255068642322',
                 'client_secret': process.env['FB_SECRET'],
