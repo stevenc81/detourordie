@@ -85,6 +85,8 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
                   }
                 }
             });
+
+            $scope.$apply();
         },
         error: function() {
             dialogBox.error({
