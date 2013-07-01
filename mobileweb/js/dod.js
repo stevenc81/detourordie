@@ -293,6 +293,7 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
                 }
             });
 
+            $scope.$apply();
         }
     });
 
