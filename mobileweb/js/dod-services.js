@@ -61,13 +61,14 @@ app.factory('geolocation', ['$window', function ($window) {
         getGeo: function (params) {
             var geo = { lat: 0, lon: 0 };
 
-            if (localStorage.lat && localStorage.lon) {
-                console.log('# geolocation available from localStorage');
-                geo.lat = localStorage.lat;
-                geo.lon = localStorage.lon;
+            // if (localStorage.lat && localStorage.lon) {
+            //     console.log('# geolocation available from localStorage');
+            //     geo.lat = localStorage.lat;
+            //     geo.lon = localStorage.lon;
 
-                params.success(geo);
-            } else if ($window.navigator.geolocation) {
+            //     params.success(geo);
+            // } else
+            if ($window.navigator.geolocation) {
                 console.log('# geolocation available from browser');
 
                 $window.navigator.geolocation.getCurrentPosition(function (position) {
