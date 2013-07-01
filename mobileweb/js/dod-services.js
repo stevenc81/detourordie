@@ -61,25 +61,31 @@ app.factory('geolocation', ['$window', function ($window) {
         getGeo: function (params) {
             var geo = { lat: 0, lon: 0 };
 
-            // if (localStorage.lat && localStorage.lon) {
-            //     console.log('# geolocation available from localStorage');
-            //     geo.lat = localStorage.lat;
-            //     geo.lon = localStorage.lon;
-
-            //     params.success(geo);
-            // } else
             if ($window.navigator.geolocation) {
                 console.log('# geolocation available from browser');
 
-                $window.navigator.geolocation.getCurrentPosition(function (position) {
-                    geo.lat = position.coords.latitude;
-                    geo.lon = position.coords.longitude;
+                $window.navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        localStorage.lat = geo.lat = position.coords.latitude;
+                        localStorage.lon = geo.lon = position.coords.longitude;
 
-                    localStorage.lat = geo.lat;
-                    localStorage.lon = geo.lon;
+                        console.log('# geolocation retrieved from browser' + geo);
+                        params.success(geo);
+                    },
+                    function(err) {
+                        console.log('# geolocation retrieval incur an error: ' + err.message);
 
-                    params.success(geo);
-                });
+                        if (localStorage.lat && localStorage.lon) {
+                            console.log('# geolocation available from localStorage');
+                            geo.lat = localStorage.lat;
+                            geo.lon = localStorage.lon;
+
+                            params.success(geo);
+                        } else {
+                            params.error();
+                        }
+                    },
+                    {maximumAge: 60000, timeout: 4000, enableHighAccuracy: true});
             } else {
                 console.log('# couldn\'t get geolocation');
                 params.error();

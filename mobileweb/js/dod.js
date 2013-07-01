@@ -79,10 +79,10 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
         success: function(geo) {
             angular.extend($scope, {
                 position: {
-                  coords: {
-                    latitude: geo.lat,
-                    longitude: geo.lon
-                  }
+                    coords: {
+                        latitude: geo.lat,
+                        longitude: geo.lon
+                    }
                 }
             });
 
