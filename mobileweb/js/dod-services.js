@@ -102,6 +102,31 @@ app.factory('googleGeometry', ['$window', function($window) {
     return $window.google.maps.geometry;
 }]);
 
+app.factory('googleGeocoder', ['$window', function($window) {
+    return {
+        getAddress: function (params) {
+            new $window.google.maps.Geocoder().geocode(
+            { 'latLng': new google.maps.LatLng(params.lat, params.lon) },
+            function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                  if (results[1]) {
+                    params.success(results[1].formatted_address);
+                  } else {
+                    console.log('No results found');
+                    params.error();
+                  }
+                } else {
+                    console.log('# Geocoder failed due to: ' + status);
+                    params.error();
+                }
+
+                if (params.finalizer) {
+                    params.finalizer();
+                }
+            });
+        }
+    };
+}]);
 
 app.factory('dialogBox', ['$window', function ($window) {
     var overlay;

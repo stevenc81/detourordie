@@ -245,55 +245,78 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI, dialogBox)
     };
 }
 
-function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeometry, dialogBox) {
+function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeometry, dialogBox, googleGeocoder) {
     console.log('# in list ctrl');
 
     var currentGeo;
 
-    var _prepareData = function(data) {
-        var rv = {
-            'timestamp': data.timestamp,
-            'ago': moment(data.timestamp).fromNow(),
-            'age': moment().diff(data.timestamp, 'hours'),
-            'distance': Math.round(googleGeometry.spherical.computeDistanceBetween(
-                new google.maps.LatLng(currentGeo.lat, currentGeo.lon),
-                new google.maps.LatLng(data.lat, data.lon))),
-            'lat': data.lat,
-            'lon': data.lon
-        };
+    var _prepareData = function(element) {
 
-        return rv;
+        return {'timestamp': element.timestamp,
+        'ago': moment(element.timestamp).fromNow(),
+        'age': moment().diff(element.timestamp, 'hours'),
+        'distance': Math.round(googleGeometry.spherical.computeDistanceBetween(
+                    new google.maps.LatLng(currentGeo.lat, currentGeo.lon),
+                    new google.maps.LatLng(element.lat, element.lon))),
+        'lat': element.lat,
+        'lon': element.lon
+        };
+    };
+
+    var _finalize = function() {
+        $scope.checkpoints = $scope.checkpoints.sort(function(a, b) {
+            var rv = moment(b.timestamp).diff(moment(a.timestamp));
+            return rv;
+        });
+
+        console.log('# checkpoint sorting completed');
+        console.log($scope.checkpoints);
+        $scope.$apply();
+
+        dialogBox.hideOverlay();
     };
 
     dialogBox.loading();
     geolocation.getGeo({
         success: function(geo) {
             currentGeo = geo;
-            var checkpoints = [];
+            $scope.checkpoints = [];
 
             serviceAPI.listCheckpoints({
                 'maxResults': 100,
                 'pageToken': 1,
                 success: function(data) {
-                    for (var i = 0; i < data.items.length; i++) {
-                        checkpoints.push(_prepareData(data.items[i]));
-                    }
-
-                    $scope.checkpoints = checkpoints.sort(function(a, b) {
-                        var rv = moment(b.timestamp).diff(moment(a.timestamp));
-                        return rv;
+                    data.items.forEach(function(element, index, array) {
+                        $scope.checkpoints.push(_prepareData(element));
                     });
 
-                    console.log('# checkpoint sorting completed');
-                    dialogBox.hideOverlay();
+                    $scope.checkpoints.forEach(function(element, index, array) {
+                        console.log('# adding address using reverse geocoding: ');
+                        var finalizer = null;
+
+                        if (index === array.length - 1) {
+                            finalizer = _finalize;
+                        }
+
+                        googleGeocoder.getAddress({
+                            'lat': element.lat,
+                            'lon': element.lon,
+                            'finalizer': finalizer,
+                            success: function(data) {
+                                element['address'] = data;
+                            }
+                        });
+                    });
                 },
                 error: function() {
                     dialogBox.error();
                     dialogBox.hideOverlay();
                 }
             });
-
-            $scope.$apply();
+        },
+        error: function() {
+            dialogBox.error();
+            dialogBox.hideOverlay();
         }
     });
 
