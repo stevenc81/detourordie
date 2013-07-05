@@ -119,10 +119,6 @@ app.factory('googleGeocoder', ['$window', function($window) {
                     console.log('# Geocoder failed due to: ' + status);
                     params.error();
                 }
-
-                if (params.finalizer) {
-                    params.finalizer();
-                }
             });
         }
     };
@@ -194,11 +190,11 @@ app.factory('dialogBox', ['$window', function ($window) {
     };
 }]);
 
-app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation) {
+app.factory('serviceAPI', ['$http', 'googleGeocoder', function ($http, googleGeocoder) {
     var apiUrl = 'http://api.safejj.com';
 
     var _httpReq = function(params, method, urlStr, data) {
-        $http({method: method, url: urlStr, data: data}).
+        $http({method: method, url: urlStr, data: JSON.stringify(data)}).
         success(function (data, status, headers, config) {
             console.log('# api return data: ');
             console.log(data);
@@ -228,10 +224,20 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
             var urlStr = apiUrl + '/checkpoints';
 
             console.log('# reporting loc');
-            reqBody['lat'] = params.lat.toString();
-            reqBody['lon'] = params.lon.toString();
+            reqBody['lat'] = params.lat;
+            reqBody['lon'] = params.lon;
 
-            _httpReq(params, 'POST', urlStr, reqBody);
+            googleGeocoder.getAddress({
+                'lat': params.lat,
+                'lon': params.lon,
+                success: function(address) {
+                    reqBody['address'] = address;
+                    _httpReq(params, 'POST', urlStr, reqBody);
+                },
+                error: function() {
+                  _httpReq(params, 'POST', urlStr, reqBody);
+                }
+            });
         },
         listCheckpoints: function(params) {
             console.log('# calling api for a list of checkpoints');
@@ -244,8 +250,30 @@ app.factory('serviceAPI', ['$http', 'geolocation', function ($http, geolocation)
             urlStr += '&pageToken=' + pageToken;
 
             _httpReq(params, 'GET', urlStr, {});
+        },
+        getActivity: function(params) {
+            console.log('# calling api for an activity');
+            var urlStr = apiUrl + '/activities';
+
+            urlStr += '/' + params.id;
+
+            _httpReq(params, 'GET', urlStr, {});
         }
     };
 
     return apis;
+}]);
+
+app.factory('socketIO', ['$window', '$rootScope', function ($window, $rootScope) {
+    var socketURL = 'http://api.safejj.com/checkpoints';
+
+    return {
+        init: function() {
+            console.log('# connecting to server socket');
+            var socket = $window.io.connect(socketURL);
+            socket.on('checkpoints', function (data) {
+                $rootScope.$broadcast('new-checkpoint', data);
+            });
+        }
+    };
 }]);

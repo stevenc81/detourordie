@@ -12,6 +12,8 @@
     "less-middleware": "*",
     "flow": "*",
     "mongodb": "*",
+    "redis": "*",
+    "socket.io": "*",
     "moment": "*",
     "fb": "*"
   },

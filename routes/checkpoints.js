@@ -1,5 +1,6 @@
 var flow = require('flow'),
-    moment = require('moment');
+    moment = require('moment'),
+    asms = require('../asms/checkpoints');
 
 exports.list = function(req, res, next) {
     flow.exec(
@@ -36,12 +37,11 @@ exports.list = function(req, res, next) {
 exports.create = function(req, res, next) {
     flow.exec(
         function() {
-            var lat = req.body.lat;
-            var lon = req.body.lon;
             var collection = db.collection('checkpoints');
             collection.insert({
-                'lat': lat,
-                'lon': lon,
+                'lat': req.body.lat,
+                'lon': req.body.lon,
+                'address': req.body.address,
                 'timestamp': moment().utc().format()}, this);
         },
         function(err, result) {
@@ -50,6 +50,8 @@ exports.create = function(req, res, next) {
             }
 
             res.json(200, {'checkpoint': result[0]});
+
+            asms.publish(result[0]);
         }
     );
 };

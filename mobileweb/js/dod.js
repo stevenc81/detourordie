@@ -54,7 +54,7 @@ function LoginCtrl($scope, Facebook, $navigate, dialogBox, serviceAPI) {
     };
 }
 
-function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dialogBox) {
+function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dialogBox, socketIO, googleGeocoder) {
     console.log('# in main control');
 
     var checkpoints = [];
@@ -95,6 +95,33 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
         }
     });
 
+    serviceAPI.getActivity({
+        'id': 'latest',
+        success: function(latest) {
+            $scope.notif_address = latest.address;
+        },
+        error: function() {
+            console.log('# could not get latest checkpoint from api');
+        }
+    });
+
+    $scope.$on('new-checkpoint', function(e, data) {
+        console.log('# got new checkpoint from socket');
+        var parsed = JSON.parse(data);
+        googleGeocoder.getAddress({
+            'lat': parsed.lat,
+            'lon': parsed.lon,
+            success: function(address) {
+                $scope.$apply(function() {
+                    $scope.notif_address = address;
+                });
+            },
+            error: function() {
+                console.log('# could not load address');
+            }
+        });
+    });
+
     dialogBox.loading();
     serviceAPI.listCheckpoints({
         'maxResults': 100,
@@ -115,6 +142,8 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
             dialogBox.hideOverlay();
         }
     });
+
+    socketIO.init();
 
     $scope.reportCurrentLoc = function() {
         console.log('# report current loc');
@@ -258,22 +287,8 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
         'distance': Math.round(googleGeometry.spherical.computeDistanceBetween(
                     new google.maps.LatLng(currentGeo.lat, currentGeo.lon),
                     new google.maps.LatLng(element.lat, element.lon))),
-        'lat': element.lat,
-        'lon': element.lon
+        'address': element.address
         };
-    };
-
-    var _finalize = function() {
-        $scope.checkpoints = $scope.checkpoints.sort(function(a, b) {
-            var rv = moment(b.timestamp).diff(moment(a.timestamp));
-            return rv;
-        });
-
-        console.log('# checkpoint sorting completed');
-        console.log($scope.checkpoints);
-        $scope.$apply();
-
-        dialogBox.hideOverlay();
     };
 
     dialogBox.loading();
@@ -290,23 +305,15 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
                         $scope.checkpoints.push(_prepareData(element));
                     });
 
-                    $scope.checkpoints.forEach(function(element, index, array) {
-                        console.log('# adding address using reverse geocoding: ');
-                        var finalizer = null;
-
-                        if (index === array.length - 1) {
-                            finalizer = _finalize;
-                        }
-
-                        googleGeocoder.getAddress({
-                            'lat': element.lat,
-                            'lon': element.lon,
-                            'finalizer': finalizer,
-                            success: function(data) {
-                                element['address'] = data;
-                            }
-                        });
+                    $scope.checkpoints = $scope.checkpoints.sort(function(a, b) {
+                        var rv = moment(b.timestamp).diff(moment(a.timestamp));
+                        return rv;
                     });
+
+                    console.log('# checkpoint sorting completed');
+                    // if(!$scope.$$phase) $scope.$apply();
+
+                    dialogBox.hideOverlay();
                 },
                 error: function() {
                     dialogBox.error();

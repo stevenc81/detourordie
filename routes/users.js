@@ -42,7 +42,7 @@ exports.create = function(req, res, next) {
             '/picture?type=large&width=600&height=600';
 
             db.collection('users').insert({
-                'FBId': user.id,
+                '_id': user.id,
                 'name': user.name,
                 'ProfilePicURL': profilePicURL
             }, this);

@@ -12,7 +12,8 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     checkpoints = require('./routes/checkpoints'),
-    users = require('./routes/users');
+    users = require('./routes/users'),
+    activities = require('./routes/activities');
 
 var app = express();
 
@@ -56,7 +57,15 @@ app.options("*", function (req,res,next) { res.send(200); });
 app.get('/checkpoints', checkpoints.list);
 app.post('/checkpoints', checkpoints.create);
 app.post('/users', users.exchangeFBToken, users.create);
+app.get('/activities/latest', activities.latest);
 
-app.listen(app.get('port'), function(){
+var server = http.createServer(app);
+var io = require('socket.io').listen(server);
+
+var checkpointsAsms = require('./asms/checkpoints');
+checkpointsAsms.subscribe();
+checkpointsAsms.on(io.of('/checkpoints'));
+
+server.listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port') + ' with mode ' + process.env.ENV_NODE);
 });
