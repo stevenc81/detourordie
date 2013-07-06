@@ -106,7 +106,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
     });
 
     $scope.$on('new-checkpoint', function(e, data) {
-        console.log('# got new checkpoint from socket');
+        console.log('# new checkpoint broadcasted to scope');
         var parsed = JSON.parse(data);
         googleGeocoder.getAddress({
             'lat': parsed.lat,

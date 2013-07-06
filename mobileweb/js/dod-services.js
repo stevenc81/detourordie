@@ -272,6 +272,7 @@ app.factory('socketIO', ['$window', '$rootScope', function ($window, $rootScope)
             console.log('# connecting to server socket');
             var socket = $window.io.connect(socketURL);
             socket.on('checkpoints', function (data) {
+                console.log('# got new checkpoint from socket');
                 $rootScope.$broadcast('new-checkpoint', data);
             });
         }
