@@ -7,6 +7,8 @@ if (!process.env['MONGODB_URL']) {
 }
 
 global.db = require('./mongoconnect');
+global.publisher = require('./redisconnect').pub,
+global.subscriber = require('./redisconnect').sub;
 
 var express = require('express'),
     http = require('http'),
@@ -64,7 +66,7 @@ var io = require('socket.io').listen(server);
 
 var checkpointsAsms = require('./asms/checkpoints');
 checkpointsAsms.subscribe();
-checkpointsAsms.on(io.of('/checkpoints'));
+checkpointsAsms.on(io.of('/checkpoints').on('connection', checkpointsAsms.onConnect));
 
 server.listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port') + ' with mode ' + process.env.ENV_NODE);

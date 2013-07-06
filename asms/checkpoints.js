@@ -1,6 +1,4 @@
-var flow = require('flow'),
-    pub = require('../redisconnect').pub,
-    sub = require('../redisconnect').sub;
+var flow = require('flow');
 
 exports.publish = function(params) {
     flow.exec(
@@ -12,8 +10,8 @@ exports.publish = function(params) {
             if (err) {
                 cosole.log(err);
             }
-            console.log('# publishing message to redis');
-            pub.publish('checkpoints', JSON.stringify(result[0]));
+            console.log('# publishing %s to redis', JSON.stringify(result[0]));
+            publisher.publish('checkpoints', JSON.stringify(result[0]));
         }
     );
 };
@@ -21,8 +19,8 @@ exports.publish = function(params) {
 exports.on = function(sockets) {
     flow.exec(
         function() {
-            sub.on('message', function(channel, message) {
-                console.log('# emitting message to socket');
+            subscriber.on('message', function(channel, message) {
+                console.log('# emitting %s to socket %s', message, sockets.name);
                 sockets.emit('checkpoints', message);
             });
         }
@@ -33,7 +31,16 @@ exports.subscribe = function() {
     flow.exec(
         function() {
             console.log('# subscribing to redis');
-            sub.subscribe('checkpoints');
+            subscriber.subscribe('checkpoints');
+        }
+    );
+};
+
+exports.onConnect = function(socket) {
+    flow.exec(
+        function() {
+            console.log('# new sockect connected: id = %s, namespoace = %s',
+             socket.id, socket.namespace.name);
         }
     );
 };
