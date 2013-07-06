@@ -266,14 +266,18 @@ app.factory('serviceAPI', ['$http', 'googleGeocoder', function ($http, googleGeo
 
 app.factory('socketIO', ['$window', '$rootScope', function ($window, $rootScope) {
     var socketURL = 'http://api.safejj.com/checkpoints';
+    console.log('# connecting to server socket');
+    var socket = $window.io.connect(socketURL);
 
     return {
-        init: function() {
-            console.log('# connecting to server socket');
-            var socket = $window.io.connect(socketURL);
-            socket.on('checkpoints', function (data) {
+        on: function(eventName, callback) {
+            socket.on(eventName, function(data) {
                 console.log('# got new checkpoint from socket');
-                $rootScope.$broadcast('new-checkpoint', data);
+                $rootScope.$apply(function() {
+                    if (callback) {
+                        callback(data);
+                    }
+                });
             });
         }
     };

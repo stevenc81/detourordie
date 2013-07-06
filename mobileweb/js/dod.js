@@ -105,7 +105,7 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
         }
     });
 
-    $scope.$on('new-checkpoint', function(e, data) {
+    socketIO.on('checkpoints', function(data) {
         console.log('# new checkpoint broadcasted to scope');
         var parsed = JSON.parse(data);
         googleGeocoder.getAddress({
@@ -142,8 +142,6 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
             dialogBox.hideOverlay();
         }
     });
-
-    socketIO.init();
 
     $scope.reportCurrentLoc = function() {
         console.log('# report current loc');
@@ -287,6 +285,8 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
         'distance': Math.round(googleGeometry.spherical.computeDistanceBetween(
                     new google.maps.LatLng(currentGeo.lat, currentGeo.lon),
                     new google.maps.LatLng(element.lat, element.lon))),
+        'lat': element.lat,
+        'lon': element.lon,
         'address': element.address
         };
     };

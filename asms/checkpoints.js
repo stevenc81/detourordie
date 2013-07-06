@@ -39,7 +39,7 @@ exports.subscribe = function() {
 exports.onConnect = function(socket) {
     flow.exec(
         function() {
-            console.log('# new sockect connected: id = %s, namespoace = %s',
+            console.log('# new socket connected: id = %s, namespoace = %s',
              socket.id, socket.namespace.name);
         }
     );
