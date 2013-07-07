@@ -266,12 +266,32 @@ app.factory('serviceAPI', ['$http', 'googleGeocoder', function ($http, googleGeo
 
 app.factory('socketIO', ['$window', '$rootScope', function ($window, $rootScope) {
     var socketURL = 'http://api.safejj.com/checkpoints';
-    console.log('# connecting to server socket');
-    var socket = $window.io.connect(socketURL);
+
+    $window.socket = $window.io.connect(socketURL);
+
+    $window.socket.on('connecting', function () {
+        console.log('# connecting to server socket');
+    });
+
+    $window.socket.on('connect', function () {
+        console.log('# successfully connected to socket server');
+    });
+
+    $window.socket.on('reconnect', function () {
+        console.log('# successfully re-connected to socket server');
+    });
+
+    $window.socket.on('connect_failed', function () {
+        console.log('# failed to connect to socket server');
+    });
+
+    $window.socket.on('re-connect_failed', function () {
+        console.log('# failed to re-connect to socket server');
+    });
 
     return {
         on: function(eventName, callback) {
-            socket.on(eventName, function(data) {
+            $window.socket.on(eventName, function(data) {
                 console.log('# got new checkpoint from socket');
                 $rootScope.$apply(function() {
                     if (callback) {
