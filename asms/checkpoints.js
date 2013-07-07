@@ -40,7 +40,7 @@ exports.onConnect = function(socket) {
     flow.exec(
         function() {
             console.log('# new socket connected: id = %s, namespoace = %s',
-             socket.id, socket.namespace.name);
+                socket.id, socket.namespace.name);
         }
     );
 };

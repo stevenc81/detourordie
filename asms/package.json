@@ -1,0 +1,16 @@
+{
+  "name": "dod-asms",
+  "subdomain": "dod-asms",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "redis": "*",
+    "socket.io": "*"
+  },
+  "engines": {
+    "node": "0.10.12"
+  }
+}
