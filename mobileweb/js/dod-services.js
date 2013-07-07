@@ -277,6 +277,10 @@ app.factory('socketIO', ['$window', '$rootScope', function ($window, $rootScope)
         console.log('# successfully connected to socket server');
     });
 
+    $window.socket.on('reconnecting', function () {
+        console.log('# reconnecting to socket server');
+    });
+
     $window.socket.on('reconnect', function () {
         console.log('# successfully re-connected to socket server');
     });
@@ -285,7 +289,7 @@ app.factory('socketIO', ['$window', '$rootScope', function ($window, $rootScope)
         console.log('# failed to connect to socket server');
     });
 
-    $window.socket.on('re-connect_failed', function () {
+    $window.socket.on('reconnect_failed', function () {
         console.log('# failed to re-connect to socket server');
     });
 
