@@ -265,7 +265,7 @@ app.factory('serviceAPI', ['$http', 'googleGeocoder', function ($http, googleGeo
 }]);
 
 app.factory('socketIO', ['$window', '$rootScope', function ($window, $rootScope) {
-    var socketURL = 'http://asms.safejj.com/checkpoints';
+    var socketURL = 'http://asms.safejj.com:9002/checkpoints';
 
     $window.socket = $window.io.connect(socketURL, {
         'reconnection delay': 100, // defaults to 500
