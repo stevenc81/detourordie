@@ -3,30 +3,34 @@ var flow = require('flow'),
     asms = require('../asms/checkpoints');
 
 exports.list = function(req, res, next) {
+    var maxResults = req.query.maxResults? req.query.maxResults : 10;
+    var pageToken = req.query.pageToken? req.query.pageToken : 1;
+    var totalItems = 0;
+
     flow.exec(
         function() {
             var collection = db.collection('checkpoints');
-            collection.find().toArray(this);
+            totalItems = collection.count(function(err, count) {
+                totalItems = count;
+            });
+
+            collection.find().sort({'timestamp': -1}).
+                              skip((pageToken - 1) * maxResults).
+                              limit(maxResults).
+                              toArray(this);
         },
         function(err, result) {
             if (err) {
                 res.json(500, err);
             }
 
-            var sorted = result.sort({'timestamp': -1});
-
-            var maxResults = req.query.maxResults? req.query.maxResults : 10;
-            var pageToken = req.query.pageToken? req.query.pageToken : 1;
-
             resp = {
-                'totalItems': sorted.length,
-                'items': sorted.slice(
-                    (pageToken - 1) * maxResults,
-                    pageToken * maxResults)
+                'totalItems': totalItems,
+                'items': result
             };
 
-            if (pageToken * maxResults <  sorted.length) {
-                resp.nextPageToken = pageToken++;
+            if (totalItems > pageToken * maxResults ) {
+                resp.nextPageToken = ++pageToken;
             }
 
             res.json(200, resp);

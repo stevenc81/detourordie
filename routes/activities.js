@@ -4,7 +4,9 @@ exports.latest = function(req, res, next) {
     flow.exec(
         function() {
             var collection = db.collection('activities');
-            collection.find().sort({'timestamp': -1}).limit(1).toArray(this);
+            collection.find().sort({'timestamp': -1}).
+                              limit(1).
+                              toArray(this);
         },
         function(err, result) {
             if (err) {

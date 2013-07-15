@@ -13,7 +13,6 @@
     "flow": "*",
     "mongodb": "*",
     "redis": "*",
-    "socket.io": "*",
     "moment": "*",
     "fb": "*"
   },
