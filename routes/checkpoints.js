@@ -3,8 +3,10 @@ var flow = require('flow'),
     asms = require('../asms/checkpoints');
 
 exports.list = function(req, res, next) {
-    var maxResults = req.query.maxResults? req.query.maxResults : 10;
-    var pageToken = req.query.pageToken? req.query.pageToken : 1;
+    var maxResults = req.query.maxResults?
+                     parseInt(req.query.maxResults, 10) : 10;
+    var pageToken = req.query.pageToken?
+                    parseInt(req.query.pageToken, 10) : 1;
     var totalItems = 0;
 
     flow.exec(
