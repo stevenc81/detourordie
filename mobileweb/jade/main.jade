@@ -7,5 +7,5 @@ header.bar-title
     ul.list
         li 最新臨檢:
             strong {{notif_address}}
-    .google-map#main-map(center="position.coords", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="false", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")
+    .google-map#main-map(center="centerProperty", zoom="zoomProperty", markers="markersProperty", latitude="clickedLatitudeProperty", longitude="clickedLongitudeProperty", mark-click="false", draggable="true", fit="false", events="eventsProperty", refresh="refreshProperty")
     a.button-negative.button-block(ng-click="reportCurrentLoc()") 回報現在位置!

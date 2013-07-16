@@ -54,22 +54,15 @@ function LoginCtrl($scope, Facebook, $navigate, dialogBox, serviceAPI) {
     };
 }
 
-function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dialogBox, socketIO, googleGeocoder) {
+function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dialogBox, socketIO, googleGeocoder, $timeout) {
     console.log('# in main control');
 
     var checkpoints = [];
     angular.extend($scope, {
-        position: {
-                  coords: {
-                    latitude: 0,
-                    longitude: 0
-                  }
-        },
         centerProperty: {
             latitude: 0,
             longitude: 0
         },
-
         zoomProperty: 13,
 
         markersProperty: checkpoints
@@ -77,16 +70,18 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
 
     geolocation.getGeo({
         success: function(geo) {
-            angular.extend($scope, {
-                position: {
-                    coords: {
-                        latitude: geo.lat,
-                        longitude: geo.lon
-                    }
-                }
-            });
-
+            $scope.centerProperty = {
+                            latitude: 121,
+                            longitude: 25
+                        };
             $scope.$apply();
+
+            $timeout(function () {
+                $scope.centerProperty = {
+                            latitude: geo.lat,
+                            longitude: geo.lon
+                        };
+            }, 1000);
         },
         error: function() {
             dialogBox.error({
@@ -191,28 +186,19 @@ function MainCtrl($scope, geolocation, $log, serviceAPI, $navigate, moment, dial
     };
 }
 
-function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI, dialogBox) {
+function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI, dialogBox, $timeout) {
     console.log('# in report ctrl');
 
-    var checkpoints = [];
     var markedLoc = {};
 
     angular.extend($scope, {
-        position: {
-                  coords: {
-                    latitude: 0,
-                    longitude: 0
-                  }
-        },
         centerProperty: {
             latitude: 0,
             longitude: 0
         },
 
         zoomProperty: 13,
-
-        markersProperty: checkpoints,
-
+        markersProperty: [],
         eventsProperty: {
           click: function (mapModel, eventName, originalEventArgs) {
             markedLoc['lat'] = originalEventArgs[0].latLng.jb;
@@ -223,22 +209,29 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI, dialogBox)
 
     geolocation.getGeo({
         success: function(geo) {
-            angular.extend($scope, {
-                position: {
-                  coords: {
-                    latitude: geo.lat,
-                    longitude: geo.lon
-                  }
-                }
-            });
-
+            $scope.centerProperty = {
+                            latitude: 121,
+                            longitude: 25
+                        };
             $scope.$apply();
+
+            $timeout(function () {
+                $scope.centerProperty = {
+                            latitude: geo.lat,
+                            longitude: geo.lon
+                        };
+            }, 1000);
+        },
+        error: function() {
+            dialogBox.error({
+                'text': 'GPS定位不了！'
+            });
         }
     });
 
     $scope.back2Map = function() {
         console.log('# back to main');
-        $navigate.go('/main');
+        $navigate.back();
     };
 
     $scope.saveReport = function() {
@@ -255,11 +248,6 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI, dialogBox)
             'lat': markedLoc.lat,
             'lon': markedLoc.lon,
             success: function(data) {
-                checkpoints.push({
-                    latitude: data.checkpoint.lat,
-                    longitude: data.checkpoint.lon
-                });
-
                 dialogBox.success();
                 dialogBox.hideOverlay();
                 $navigate.go('/main', 'slide');
@@ -311,7 +299,6 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
                     });
 
                     console.log('# checkpoint sorting completed');
-                    // if(!$scope.$$phase) $scope.$apply();
 
                     dialogBox.hideOverlay();
                 },
@@ -330,7 +317,7 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
     $scope.back2Map = function() {
         console.log('# back to main');
 
-        $navigate.go('/main', 'slide');
+        $navigate.back();
     };
 
     $scope.pinOnMap = function(checkpoint) {
@@ -340,7 +327,7 @@ function ListCtrl($scope, moment, serviceAPI, geolocation, $navigate, googleGeom
     };
 }
 
-function PinMapCtrl($scope, $routeParams, $navigate, moment) {
+function PinMapCtrl($scope, $routeParams, $navigate, moment, $timeout) {
     console.log('# in pin map ctrl');
 
     var latitude = $routeParams.lat;
@@ -348,15 +335,9 @@ function PinMapCtrl($scope, $routeParams, $navigate, moment) {
     var c_time = $routeParams.c_time;
 
     angular.extend($scope, {
-        position: {
-                  coords: {
-                    latitude: latitude,
-                    longitude: longitude
-                  }
-        },
         centerProperty: {
-            latitude: latitude,
-            longitude: longitude
+            latitude: 0,
+            longitude: 0
         },
 
         zoomProperty: 13,
@@ -367,9 +348,23 @@ function PinMapCtrl($scope, $routeParams, $navigate, moment) {
             'infoWindow': moment(c_time).fromNow()}]
     });
 
+    $timeout(function() {
+        $scope.centerProperty = {
+                            latitude: latitude,
+                            longitude: longitude
+                        };
+    }, 1000);
+
+    $timeout(function() {
+        $scope.centerProperty = {
+                            latitude: latitude,
+                            longitude: longitude
+                        };
+    }, 2000);
+
     $scope.back2List = function() {
         console.log('# back to list');
-        $navigate.go('/list', 'slide');
+        $navigate.back();
     };
 
 }

@@ -69,7 +69,8 @@ app.factory('geolocation', ['$window', function ($window) {
                         localStorage.lat = geo.lat = position.coords.latitude;
                         localStorage.lon = geo.lon = position.coords.longitude;
 
-                        console.log('# geolocation retrieved from browser' + geo);
+                        console.log('# geolocation retrieved from browser, lat: %s lon: %s', geo.lat, geo.lon);
+
                         params.success(geo);
                     },
                     function(err) {
