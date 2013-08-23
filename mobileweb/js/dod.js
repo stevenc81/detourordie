@@ -201,8 +201,8 @@ function ReportCtrl($scope, geolocation, $navigate, $log, serviceAPI, dialogBox,
         markersProperty: [],
         eventsProperty: {
           click: function (mapModel, eventName, originalEventArgs) {
-            markedLoc['lat'] = originalEventArgs[0].latLng.jb;
-            markedLoc['lon'] = originalEventArgs[0].latLng.kb;
+            markedLoc['lat'] = originalEventArgs[0].latLng.mb;
+            markedLoc['lon'] = originalEventArgs[0].latLng.nb;
           }
         }
     });
